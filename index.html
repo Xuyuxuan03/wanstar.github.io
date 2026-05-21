@@ -1,0 +1,1197 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>万思达 Wanstar | 本地PPT演讲页</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #050812;
+      --panel: rgba(15, 23, 42, 0.75);
+      --panel-soft: rgba(10, 18, 36, 0.48);
+      --ink: #e5eefb;
+      --white: #ffffff;
+      --muted: #cbd5e1;
+      --quiet: #94a3b8;
+      --dim: #64748b;
+      --cyan: #67e8f9;
+      --cyan-2: #60a5fa;
+      --violet: #a78bfa;
+      --violet-2: #8b5cf6;
+      --amber: #fbbf24;
+      --green: #5eead4;
+      --rose: #fb7185;
+      --border: rgba(148, 163, 184, 0.18);
+      --border-strong: rgba(103, 232, 249, 0.28);
+      --shadow: 0 18px 70px rgba(0, 0, 0, 0.26);
+      --shadow-strong: 0 22px 80px rgba(0, 0, 0, 0.3), 0 0 34px rgba(59, 130, 246, 0.12);
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      background: var(--bg);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      color: var(--ink);
+      background:
+        linear-gradient(rgba(148, 163, 184, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.045) 1px, transparent 1px),
+        radial-gradient(circle at 18% 8%, rgba(59, 130, 246, 0.28), transparent 28%),
+        radial-gradient(circle at 88% 18%, rgba(124, 58, 237, 0.24), transparent 26%),
+        radial-gradient(circle at 52% 92%, rgba(20, 184, 166, 0.13), transparent 30%),
+        #050812;
+      background-size: 48px 48px, 48px 48px, auto, auto, auto, auto;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    #deck {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      width: 1280px;
+      height: 720px;
+      transform: translate(-50%, -50%) scale(var(--deck-scale, 1));
+      transform-origin: center center;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 1280px;
+      height: 720px;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(42px) scale(.985);
+      transition: opacity 320ms ease, transform 320ms ease;
+      padding: 38px 44px;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0) scale(1);
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 76% 20%, rgba(103, 232, 249, .10), transparent 24%),
+        radial-gradient(circle at 21% 78%, rgba(167, 139, 250, .10), transparent 26%);
+      pointer-events: none;
+    }
+
+    .slide > * { position: relative; z-index: 1; }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 18px;
+      height: 54px;
+    }
+
+    .wanstar-logo {
+      position: relative;
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(103,232,249,.25), rgba(59,130,246,.20), rgba(167,139,250,.25));
+      box-shadow: 0 0 28px rgba(103, 232, 249, .22);
+    }
+
+    .wanstar-logo svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      line-height: 1.1;
+      font-weight: 650;
+      color: var(--white);
+    }
+
+    .brand-subtitle {
+      margin-top: 5px;
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--quiet);
+    }
+
+    .section-title { margin-bottom: 22px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+    h1, h2, h3, p { margin: 0; }
+    h1 {
+      font-size: 58px;
+      line-height: 1.02;
+      font-weight: 650;
+      letter-spacing: 0;
+      color: var(--white);
+    }
+    h2 {
+      font-size: 32px;
+      line-height: 1.18;
+      font-weight: 650;
+      color: var(--white);
+    }
+    h3 {
+      font-size: 16px;
+      line-height: 1.35;
+      font-weight: 650;
+      color: var(--white);
+    }
+    .desc {
+      max-width: 860px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .glass {
+      border: 1px solid var(--border);
+      background: linear-gradient(145deg, var(--panel), var(--panel-soft));
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      border-radius: 16px;
+      transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+    }
+
+    .glass:hover {
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-strong);
+    }
+
+    .soft-glow {
+      position: relative;
+    }
+
+    .soft-glow::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      background: linear-gradient(120deg, rgba(59, 130, 246, .35), rgba(168, 85, 247, .22), rgba(20, 184, 166, .2));
+      opacity: .6;
+      z-index: -1;
+      filter: blur(14px);
+    }
+
+    .flow-sheen {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .flow-sheen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-120%);
+      background: linear-gradient(105deg, transparent 20%, rgba(103, 232, 249, 0.18) 50%, transparent 80%);
+      animation: sheen 4.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .pulse-node { animation: pulse-node 2.6s ease-in-out infinite; }
+    .float-slow { animation: float-slow 6s ease-in-out infinite; }
+    .orbit-ring { animation: orbit-ring 18s linear infinite; transform-origin: center; }
+    .trace-dash { stroke-dasharray: 8 10; animation: trace-dash 1.8s linear infinite; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.42);
+      background: rgba(15, 23, 42, .45);
+      color: #cbd5e1;
+      padding: 5px 11px;
+      font-size: 12px;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+    .pill.active {
+      border-color: rgba(103, 232, 249, .60);
+      background: rgba(103, 232, 249, .15);
+      color: #cffafe;
+    }
+
+    .btn-primary {
+      border: 0;
+      border-radius: 12px;
+      background: #67e8f9;
+      color: #020617;
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 0 28px rgba(103, 232, 249, .22);
+    }
+    .btn-ghost {
+      border: 1px solid rgba(167, 139, 250, .40);
+      border-radius: 12px;
+      background: rgba(167, 139, 250, .10);
+      color: #ede9fe;
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .grid { display: grid; gap: 16px; }
+    .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .six { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+    .card { padding: 20px; }
+    .mini-card {
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, .32);
+      background: rgba(2, 6, 23, .45);
+      padding: 14px;
+    }
+    .cyan-card {
+      border-color: rgba(103, 232, 249, .22);
+      background: rgba(103, 232, 249, .10);
+      color: #ecfeff;
+    }
+    .violet-card {
+      border-color: rgba(167, 139, 250, .22);
+      background: rgba(167, 139, 250, .10);
+      color: #f5f3ff;
+    }
+    .amber-card {
+      border-color: rgba(251, 191, 36, .28);
+      background: rgba(251, 191, 36, .10);
+      color: #fffbeb;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.72;
+    }
+    .small {
+      color: var(--quiet);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+    .tiny {
+      color: var(--quiet);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+    .cyan-text { color: #cffafe; }
+    .violet-text { color: #ede9fe; }
+    .amber-text { color: #fde68a; }
+
+    .metric { display: grid; gap: 8px; }
+    .metric-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .metric-row span:last-child { color: #cffafe; }
+    .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(30, 41, 59, .8);
+      overflow: hidden;
+    }
+    .bar > i {
+      display: block;
+      height: 100%;
+      width: var(--v);
+      border-radius: inherit;
+      background: linear-gradient(90deg, #22d3ee, #60a5fa, #a78bfa);
+      box-shadow: 0 0 20px rgba(103, 232, 249, .26);
+    }
+
+    .hero {
+      min-height: 450px;
+      border-radius: 28px;
+      border: 1px solid rgba(148, 163, 184, .35);
+      background:
+        radial-gradient(circle at 72% 30%, rgba(103,232,249,.18), transparent 26%),
+        radial-gradient(circle at 86% 72%, rgba(167,139,250,.16), transparent 26%),
+        linear-gradient(145deg, rgba(15, 23, 42, .78), rgba(10,18,36,.50));
+      box-shadow: 0 25px 90px rgba(0,0,0,.30);
+      padding: 38px;
+    }
+
+    .hero-art {
+      position: absolute;
+      right: 42px;
+      bottom: 40px;
+      width: 300px;
+      height: 190px;
+      border-radius: 24px;
+      border: 1px solid rgba(103, 232, 249, .20);
+      background:
+        linear-gradient(to top, rgba(2,6,23,1), rgba(2,6,23,.20), transparent),
+        radial-gradient(circle at 28% 40%, rgba(103,232,249,.32), transparent 18%),
+        radial-gradient(circle at 62% 34%, rgba(167,139,250,.34), transparent 18%),
+        radial-gradient(circle at 46% 66%, rgba(96,165,250,.30), transparent 18%),
+        rgba(2,6,23,.72);
+      box-shadow: 0 0 28px rgba(103, 232, 249, .18);
+    }
+
+    .hero-art .caption {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 14px;
+    }
+
+    .circle-orbit {
+      position: absolute;
+      right: 118px;
+      top: 56px;
+      width: 210px;
+      height: 210px;
+      border-radius: 999px;
+      border: 1px solid rgba(103,232,249,.20);
+    }
+    .circle-orbit::before {
+      content: "";
+      position: absolute;
+      inset: 40px;
+      border-radius: 999px;
+      border: 1px solid rgba(167,139,250,.20);
+    }
+    .circle-orbit::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px;
+      border-radius: 999px;
+      background: #67e8f9;
+      box-shadow: 0 0 24px rgba(103,232,249,.70);
+    }
+
+    .flow-step {
+      position: relative;
+      min-height: 154px;
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, .36);
+      background: rgba(2, 6, 23, .45);
+      padding: 15px;
+    }
+    .flow-step .stripe {
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #67e8f9, #a78bfa);
+      opacity: .72;
+      margin-bottom: 14px;
+    }
+
+    .dialogue {
+      display: grid;
+      gap: 14px;
+    }
+    .bubble {
+      border-radius: 16px;
+      padding: 14px;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+    .bubble.q {
+      border-top-left-radius: 4px;
+      border: 1px solid rgba(96, 165, 250, .22);
+      background: rgba(96, 165, 250, .10);
+      color: #eff6ff;
+    }
+    .bubble.a {
+      margin-left: 28px;
+      border-top-right-radius: 4px;
+      border: 1px solid rgba(167, 139, 250, .22);
+      background: rgba(167, 139, 250, .12);
+      color: #f8fafc;
+    }
+
+    .radar {
+      position: relative;
+      height: 255px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle, transparent 17%, rgba(103,232,249,.12) 18%, transparent 19%),
+        radial-gradient(circle, transparent 34%, rgba(103,232,249,.10) 35%, transparent 36%),
+        radial-gradient(circle, transparent 52%, rgba(103,232,249,.08) 53%, transparent 54%);
+    }
+    .radar svg { width: 100%; height: 100%; overflow: visible; }
+
+    .brain-map {
+      position: relative;
+      height: 315px;
+      border-radius: 46%;
+      border: 1px solid rgba(103,232,249,.20);
+      background: linear-gradient(135deg, rgba(103,232,249,.10), rgba(167,139,250,.10), rgba(2,6,23,.70));
+      box-shadow: 0 0 28px rgba(103,232,249,.18);
+    }
+    .brain-map::before, .brain-map::after {
+      content: "";
+      position: absolute;
+      border-radius: 46%;
+      border: 1px solid rgba(103,232,249,.14);
+    }
+    .brain-map::before { inset: 28px; }
+    .brain-map::after { inset: 70px; border-color: rgba(167,139,250,.16); }
+    .brain-node {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      border: 1px solid #cffafe;
+      background: #67e8f9;
+      box-shadow: 0 0 22px rgba(103,232,249,.70);
+    }
+    .brain-label {
+      position: absolute;
+      transform: translate(-50%, 8px);
+      min-width: 108px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,.48);
+      background: rgba(2,6,23,.72);
+      backdrop-filter: blur(12px);
+      padding: 6px 8px;
+      font-size: 11px;
+      line-height: 1.4;
+      color: var(--muted);
+    }
+    .brain-label b { display: block; color: var(--white); }
+    .brain-label i { display: block; font-style: normal; color: #bae6fd; }
+
+    .slider-row {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    .slider-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--white);
+      font-weight: 600;
+    }
+    .track {
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(30, 41, 59, .86);
+      overflow: hidden;
+    }
+    .track i {
+      display: block;
+      width: var(--v);
+      height: 100%;
+      background: linear-gradient(90deg, #67e8f9, #60a5fa, #a78bfa);
+    }
+    .track-labels {
+      display: flex;
+      justify-content: space-between;
+      color: var(--dim);
+      font-size: 10px;
+    }
+
+    .avatar-orb {
+      width: 128px;
+      height: 128px;
+      margin: 0 auto 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(103,232,249,.35);
+      background: linear-gradient(135deg, rgba(103,232,249,.20), rgba(167,139,250,.20));
+      box-shadow: 0 0 28px rgba(103,232,249,.20);
+      display: grid;
+      place-items: center;
+    }
+    .avatar-orb i {
+      width: 72px;
+      height: 72px;
+      border-radius: 999px;
+      background: rgba(2,6,23,.80);
+      border: 2px solid rgba(207,250,254,.52);
+      display: block;
+    }
+
+    .battlefield {
+      height: 450px;
+      display: grid;
+      grid-template-columns: 200px 1fr 260px;
+      overflow: hidden;
+    }
+    .battle-aside {
+      border-right: 1px solid rgba(148, 163, 184, .20);
+      background: rgba(2,6,23,.30);
+      padding: 16px;
+    }
+    .battle-right {
+      border-left: 1px solid rgba(148, 163, 184, .20);
+      background: rgba(2,6,23,.30);
+      padding: 16px;
+    }
+    .battle-center {
+      position: relative;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 170px 1fr 170px;
+      gap: 20px;
+      align-items: center;
+    }
+    .battle-center::before {
+      content: "";
+      position: absolute;
+      left: 15%;
+      right: 15%;
+      top: 50%;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(103,232,249,.10), rgba(103,232,249,.60), rgba(167,139,250,.10));
+    }
+    .zone-wrap {
+      border-radius: 24px;
+      border: 1px dashed rgba(103,232,249,.30);
+      background: rgba(103,232,249,.05);
+      padding: 12px;
+    }
+    .zone {
+      border-radius: 16px;
+      border: 1px solid rgba(148,163,184,.40);
+      background: rgba(2,6,23,.55);
+      padding: 12px;
+      margin-top: 10px;
+    }
+    .zone.active {
+      border-color: rgba(103,232,249,.70);
+      background: rgba(103,232,249,.15);
+      box-shadow: 0 0 28px rgba(103,232,249,.15);
+    }
+
+    .loop-map {
+      position: relative;
+      height: 462px;
+      border-radius: 24px;
+      border: 1px solid rgba(148,163,184,.28);
+      background:
+        radial-gradient(circle at 50% 50%, rgba(59,130,246,.14), transparent 34%),
+        linear-gradient(rgba(96,165,250,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96,165,250,.04) 1px, transparent 1px),
+        rgba(2,6,23,.35);
+      background-size: auto, 44px 44px, 44px 44px;
+      overflow: hidden;
+    }
+    .loop-map svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .loop-node {
+      position: absolute;
+      width: 150px;
+      transform: translate(-50%, -50%);
+      border-radius: 16px;
+      border: 1px solid rgba(148,163,184,.58);
+      background: rgba(2,6,23,.78);
+      backdrop-filter: blur(12px);
+      padding: 10px;
+      font-size: 11px;
+      line-height: 1.45;
+      color: var(--quiet);
+    }
+    .loop-node b { display: block; margin-bottom: 4px; color: var(--white); font-size: 12px; }
+    .loop-node.c { border-color: rgba(94,234,212,.45); background: rgba(94,234,212,.12); }
+    .loop-node.a { border-color: rgba(103,232,249,.45); background: rgba(103,232,249,.12); }
+    .loop-node.n { border-color: rgba(167,139,250,.45); background: rgba(167,139,250,.12); }
+    .loop-node.action { border-color: rgba(251,191,36,.45); background: rgba(251,191,36,.12); }
+
+    .slide-count {
+      position: absolute;
+      right: 54px;
+      bottom: 32px;
+      z-index: 2;
+      font-size: 12px;
+      color: rgba(203, 213, 225, .62);
+      letter-spacing: .18em;
+    }
+
+    .profiling-slide {
+      padding: 28px 22px 36px;
+    }
+
+    .profiling-slide .section-title {
+      margin-bottom: 28px;
+    }
+
+    .profiling-slide h2 {
+      font-size: 34px;
+      line-height: 1.12;
+    }
+
+    .profiling-slide .desc {
+      margin-top: 12px;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .profiling-board {
+      display: grid;
+      grid-template-columns: 440px 360px 410px;
+      gap: 24px;
+      transform: scale(.94);
+      transform-origin: top left;
+      width: 1258px;
+    }
+
+    .profiling-board .glass {
+      min-height: 430px;
+    }
+
+    .profiling-card-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .profile-stats .mini-card {
+      min-height: 70px;
+      padding: 13px;
+    }
+
+    .profile-stats h3 {
+      margin-top: 6px;
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    .profile-question {
+      margin-top: 15px;
+      border-radius: 14px;
+      border: 1px solid rgba(96, 165, 250, .24);
+      background: rgba(96, 165, 250, .10);
+      padding: 17px 18px;
+      color: #eff6ff;
+      font-size: 14px;
+      font-weight: 650;
+      line-height: 1.58;
+    }
+
+    .profile-answer {
+      width: 92%;
+      margin: 13px auto 0;
+      border-radius: 14px;
+      border: 1px solid rgba(167, 139, 250, .28);
+      background: rgba(167, 139, 250, .12);
+      padding: 17px 18px;
+      color: #f8fafc;
+      font-size: 14px;
+      font-weight: 650;
+      line-height: 1.62;
+    }
+
+    .pipeline-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .pipeline-item {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .pipeline-index {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(103, 232, 249, .16);
+      color: #cffafe;
+      font-size: 20px;
+      font-weight: 650;
+    }
+
+    .pipeline-item .mini-card {
+      padding: 10px 13px;
+      min-height: 54px;
+    }
+
+    .pipeline-item h3 {
+      font-size: 15px;
+    }
+
+    .profile-radar {
+      height: 254px;
+      margin-top: 10px;
+      margin-bottom: 18px;
+    }
+
+    .profile-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 16px;
+    }
+
+    .controls {
+      position: fixed;
+      right: 25px;
+      bottom: 25px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      border: 1px solid rgba(103,232,249,.35);
+      background: linear-gradient(145deg, rgba(15,23,42,.78), rgba(10,18,36,.56));
+      color: #cffafe;
+      box-shadow: 0 18px 50px rgba(0,0,0,.28), 0 0 24px rgba(103,232,249,.10);
+      backdrop-filter: blur(18px);
+      font-size: 24px;
+      line-height: 1;
+    }
+    .nav-btn:disabled {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @keyframes sheen {
+      0%, 42% { transform: translateX(-120%); }
+      70%, 100% { transform: translateX(120%); }
+    }
+    @keyframes pulse-node {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(103,232,249,.38)); }
+      50% { transform: scale(1.14); filter: drop-shadow(0 0 18px rgba(103,232,249,.75)); }
+    }
+    @keyframes float-slow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes orbit-ring { to { transform: rotate(360deg); } }
+    @keyframes trace-dash { to { stroke-dashoffset: -36; } }
+  </style>
+</head>
+<body>
+  <div id="deck">
+    <section class="slide active" aria-label="战略总览">
+      <div class="brand">
+        <div class="wanstar-logo">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <defs><linearGradient id="logo-g" x1="10" y1="8" x2="54" y2="56"><stop stop-color="#67e8f9"/><stop offset=".55" stop-color="#60a5fa"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+            <rect x="7" y="7" width="50" height="50" rx="16" fill="rgba(2,6,23,.72)" stroke="url(#logo-g)" stroke-width="1.5"/>
+            <path d="M15 23 L23 43 L32 25 L41 43 L49 23" fill="none" stroke="url(#logo-g)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="32" cy="15" r="3" fill="#67e8f9"/><circle cx="51" cy="33" r="2.6" fill="#a78bfa"/><circle cx="13" cy="34" r="2.6" fill="#60a5fa"/>
+          </svg>
+        </div>
+        <div><div class="brand-title">万思达 Wanstar</div><div class="brand-subtitle">人格模拟技术 + 认知互联平台 Demo</div></div>
+      </div>
+
+      <div class="hero flow-sheen">
+        <div class="circle-orbit orbit-ring"></div>
+        <div class="hero-art">
+          <div class="caption"><h3>真实人进入认知网络</h3><p class="small">先由数字化身协作，再把高价值关系带回真实人。</p></div>
+        </div>
+        <div style="max-width: 790px;">
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px;">
+            <span class="pill active">人格模拟</span><span class="pill active">脑表征</span><span class="pill active">方向向量</span><span class="pill active">认知网络</span><span class="pill active">C-A-A-C</span>
+          </div>
+          <h1>万思达 Wanstar</h1>
+          <p style="margin-top:16px; font-size:24px; color:#cffafe;">数字化身认知互联平台</p>
+          <p style="margin-top:26px; max-width:760px; font-size:16px; line-height:2; color:#cbd5e1;">
+            万思达不是让 AI 简单扮演某个人，而是通过对话侧写、人格维度、思维方式、脑表征信号和方向向量控制，构建具有稳定认知风格的数字化身。每个数字化身都可以进入万思达网络，与其他数字化身在不同场景中进行互补协作。
+          </p>
+          <p style="margin-top:22px; font-size:24px; font-weight:600; color:white;">不是让AI扮演你，而是让你的认知结构进入网络。</p>
+          <div style="margin-top:26px; display:flex; gap:12px;"><button class="btn-primary">进入工作台</button><button class="btn-ghost">查看闭环</button></div>
+        </div>
+      </div>
+      <div class="slide-count">01 / 09</div>
+    </section>
+
+    <section class="slide" aria-label="从一个人到一张认知网络">
+      <div class="section-title">
+        <p class="eyebrow">How It Works</p>
+        <h2>从一个人，到一张认知网络</h2>
+        <p class="desc">页面展示完整路径：生成数字化身、进入网络协作、连接真实本人、持续反馈更新。</p>
+      </div>
+      <div class="grid three" style="margin-bottom:16px;">
+        <div class="glass card flow-sheen"><h3>Cells 构建数字化身</h3><div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;"><span class="pill">对话侧写</span><span class="pill">人格建模</span><span class="pill">思维方式建模</span><span class="pill">脑表征建模</span><span class="pill">方向向量控制</span></div></div>
+        <div class="glass card flow-sheen"><h3>Wanstar 连接数字化身</h3><div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;"><span class="pill">场景识别</span><span class="pill">问题拆解</span><span class="pill">互补人格匹配</span><span class="pill">多 Avatar 协作</span></div></div>
+        <div class="glass card flow-sheen"><h3>C → A → A → C 闭环</h3><div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;"><span class="pill">人生成 Avatar</span><span class="pill">Avatar 连接 Avatar</span><span class="pill">Avatar 反向连接真人</span></div></div>
+      </div>
+      <div class="glass card" style="padding:18px;">
+        <div class="grid six">
+          <div class="flow-step flow-sheen"><div class="stripe"></div><h3>真实用户 C</h3><p class="small">真实的人带着经验、价值观、知识结构和未显性化的判断方式进入系统。</p></div>
+          <div class="flow-step flow-sheen"><div class="stripe"></div><h3>Cells 人格模拟引擎</h3><p class="small">把对话、人格维度、脑表征和方向向量合成为可控的认知建模中间层。</p></div>
+          <div class="flow-step flow-sheen"><div class="stripe"></div><h3>个人数字化身 A</h3><p class="small">数字化身不是固定角色，而是具有稳定人格和可调认知风格的连续体。</p></div>
+          <div class="flow-step flow-sheen"><div class="stripe"></div><h3>Avatar 认知互联网络</h3><p class="small">不同数字化身按照问题、互补度和权限进入协作网络。</p></div>
+          <div class="flow-step flow-sheen"><div class="stripe"></div><h3>互补数字化身协作</h3><p class="small">在连接真人之前，先由数字化身完成低成本、高密度的认知协作。</p></div>
+          <div class="flow-step flow-sheen"><div class="stripe"></div><h3>连接真实本人 C</h3><p class="small">当建议被验证有价值，平台把 Avatar 背后的真实人连接出来。</p></div>
+        </div>
+      </div>
+      <div class="glass card" style="position:absolute; left:44px; right:44px; bottom:54px; display:flex; align-items:center; justify-content:space-between;">
+        <p class="muted" style="max-width:760px;">Cells 负责把人的判断方式建成 Avatar；Wanstar 负责让这些 Avatar 找到彼此，并把高价值关系带回真实世界。</p>
+        <div style="display:flex; gap:12px;"><span class="pill active">生成 Avatar</span><span class="pill active">匹配协作</span><span class="pill active">连接真人</span></div>
+      </div>
+      <div class="slide-count">02 / 09</div>
+    </section>
+
+    <section class="slide profiling-slide" aria-label="人格工作台">
+      <div class="section-title">
+        <p class="eyebrow">Cells Profiling</p>
+        <h2>从对话生成个人数字化身</h2>
+        <p class="desc">深度对话会被整理成人格、思维方式和表达风格，用来生成可交互的个人 Avatar。</p>
+      </div>
+      <div class="profiling-board">
+        <div class="glass card">
+          <div class="profiling-card-title"><h3>侧写对话区</h3><button class="btn-ghost" style="padding:8px 12px; font-size:12px;">生成下一轮侧写问题</button></div>
+          <div class="profile-stats">
+            <div class="mini-card"><p class="tiny">已采集对话轮次</p><h3 class="cyan-text" style="font-size:20px;">129</h3></div>
+            <div class="mini-card"><p class="tiny">高价值片段</p><h3 class="cyan-text" style="font-size:20px;">37</h3></div>
+            <div class="mini-card"><p class="tiny">数据质量评分</p><h3 class="cyan-text" style="font-size:20px;">93%</h3></div>
+            <div class="mini-card"><p class="tiny">方向向量种子</p><h3 class="cyan-text" style="font-size:20px;">19</h3></div>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;"><span class="pill active">结构化</span><span class="pill active">机制追问</span><span class="pill active">跨域类比</span><span class="pill active">长期主义</span></div>
+          <div class="profile-question">当你面对一个复杂问题时，你通常会先寻找结构、先找经验案例，还是先判断风险？</div>
+          <div class="profile-answer">我会先判断这个问题背后是否存在一个更底层的结构。如果只是表面问题，我通常不急着解决，而是先找它的生成机制。</div>
+        </div>
+
+        <div class="glass card">
+          <h3 style="margin-bottom:18px;">数据结构化面板</h3>
+          <div class="pipeline-list">
+            <div class="pipeline-item"><span class="pipeline-index">1</span><div class="mini-card flow-sheen"><h3>Raw Dialogue</h3><p class="tiny">原始语料</p></div></div>
+            <div class="pipeline-item"><span class="pipeline-index">2</span><div class="mini-card flow-sheen"><h3>Profiling Tags</h3><p class="tiny">人格/思维标签</p></div></div>
+            <div class="pipeline-item"><span class="pipeline-index">3</span><div class="mini-card flow-sheen"><h3>Cognitive Features</h3><p class="tiny">认知特征</p></div></div>
+            <div class="pipeline-item"><span class="pipeline-index">4</span><div class="mini-card flow-sheen"><h3>Contrastive Dataset</h3><p class="tiny">正负样本对</p></div></div>
+            <div class="pipeline-item"><span class="pipeline-index">5</span><div class="mini-card flow-sheen"><h3>Persona Pack</h3><p class="tiny">数字化身包</p></div></div>
+            <div class="pipeline-item"><span class="pipeline-index">6</span><div class="mini-card flow-sheen"><h3>Direction Vector Seed</h3><p class="tiny">方向向量初始化</p></div></div>
+          </div>
+          <div style="display:grid; gap:12px;">
+            <div class="metric"><div class="metric-row"><span>人格特征标注完整度</span><span>87%</span></div><div class="bar"><i style="--v:87%"></i></div></div>
+            <div class="metric"><div class="metric-row"><span>思维链偏向可分性</span><span>83%</span></div><div class="bar"><i style="--v:83%"></i></div></div>
+            <div class="metric"><div class="metric-row"><span>方向向量对比样本质量</span><span>80%</span></div><div class="bar"><i style="--v:80%"></i></div></div>
+          </div>
+        </div>
+
+        <div class="glass card">
+          <h3 style="margin-bottom:12px;">人格/思维模型实时生成</h3>
+          <div class="radar profile-radar">
+            <svg viewBox="0 0 320 250" aria-hidden="true">
+              <polygon points="160,30 245,62 270,140 210,218 110,218 50,140 75,62" fill="rgba(139,92,246,.35)" stroke="#67e8f9" stroke-width="2"/>
+              <g stroke="rgba(148,163,184,.25)"><line x1="160" y1="125" x2="160" y2="25"/><line x1="160" y1="125" x2="278" y2="140"/><line x1="160" y1="125" x2="210" y2="224"/><line x1="160" y1="125" x2="110" y2="224"/><line x1="160" y1="125" x2="42" y2="140"/><line x1="160" y1="125" x2="72" y2="58"/></g>
+              <g fill="#cbd5e1" font-size="11"><text x="130" y="20">结构抽象</text><text x="248" y="58">风险</text><text x="244" y="154">机制</text><text x="188" y="238">联想</text><text x="48" y="236">共情</text><text x="5" y="144">证据</text><text x="34" y="58">规划</text></g>
+            </svg>
+          </div>
+          <h3 style="margin-bottom:12px;">思维方式标签云</h3>
+          <div class="profile-tags"><span class="pill active">先找结构</span><span class="pill active">追问为什么</span><span class="pill active">跨学科类比</span><span class="pill active">不满足表层答案</span><span class="pill active">关注长期演化</span><span class="pill">偏好构建系统</span><span class="pill">以生成机制理解对象</span><span class="pill">从目标倒推必要条件</span></div>
+        </div>
+      </div>
+      <div class="slide-count">03 / 09</div>
+    </section>
+
+    <section class="slide" aria-label="脑表征建模">
+      <div class="section-title">
+        <p class="eyebrow">Research-grade Brain Representation</p>
+        <h2>脑区信号与大脑表征建模</h2>
+        <p class="desc">展示一段真实表达如何触发不同认知信号，并进一步影响数字化身的表达方式。</p>
+      </div>
+      <div class="grid" style="grid-template-columns: 470px 330px 1fr; gap:18px;">
+        <div class="glass card">
+          <h3 style="margin-bottom:14px;">脑区信号采集模拟</h3>
+          <div class="brain-map">
+            <span class="brain-node pulse-node" style="left:24%; top:34%;"></span><span class="brain-label" style="left:24%; top:34%;"><b>前额叶控制区</b><i>激活 88%</i></span>
+            <span class="brain-node" style="left:42%; top:22%; background:#a78bfa;"></span><span class="brain-label" style="left:42%; top:22%;"><b>默认模式网络</b><i>激活 76%</i></span>
+            <span class="brain-node pulse-node" style="left:66%; top:38%;"></span><span class="brain-label" style="left:66%; top:38%;"><b>语义联想区</b><i>激活 82%</i></span>
+            <span class="brain-node pulse-node" style="left:36%; top:62%;"></span><span class="brain-label" style="left:36%; top:62%;"><b>注意力网络</b><i>激活 79%</i></span>
+            <span class="brain-node" style="left:75%; top:55%; background:#a78bfa;"></span><span class="brain-label" style="left:75%; top:55%;"><b>记忆整合区</b><i>激活 73%</i></span>
+          </div>
+        </div>
+        <div class="glass card">
+          <h3 style="margin-bottom:14px;">脑表征映射</h3>
+          <div style="display:grid; gap:8px;">
+            <div class="mini-card">脑区信号</div><div style="height:18px; width:1px; background:linear-gradient(#67e8f9,#a78bfa); margin:auto;"></div>
+            <div class="mini-card">认知状态特征</div><div style="height:18px; width:1px; background:linear-gradient(#67e8f9,#a78bfa); margin:auto;"></div>
+            <div class="mini-card">表征向量</div><div style="height:18px; width:1px; background:linear-gradient(#67e8f9,#a78bfa); margin:auto;"></div>
+            <div class="mini-card">思维偏向维度</div><div style="height:18px; width:1px; background:linear-gradient(#67e8f9,#a78bfa); margin:auto;"></div>
+            <div class="mini-card">数字化身控制参数</div>
+          </div>
+        </div>
+        <div class="glass card">
+          <h3 style="margin-bottom:14px;">大模型隐空间对齐</h3>
+          <div style="display:grid; gap:10px; margin-bottom:16px;"><div class="mini-card violet-card">Human Cognitive Signal</div><div class="mini-card violet-card">Brain Representation</div><div class="mini-card violet-card">Persona Feature Space</div><div class="mini-card violet-card">LLM Hidden Space</div><div class="mini-card violet-card">Direction Vector</div><div class="mini-card violet-card">Avatar Behavior</div></div>
+          <div class="mini-card cyan-card"><p class="small">当前样本正在对齐到第 18 层 Residual Stream<br>有效控制层位：Layer 14 / 18 / 22<br>方向向量相似度：0.84<br>人格表达稳定性：91% · 常规能力保持率：96%</p></div>
+        </div>
+      </div>
+      <div class="slide-count">04 / 09</div>
+    </section>
+
+    <section class="slide" aria-label="方向向量调参">
+      <div class="section-title">
+        <p class="eyebrow">Direction Vector Tuner</p>
+        <h2>方向向量无极调参数字化身</h2>
+        <p class="desc">拖动参数，右侧回答会实时变化。这里展示的是一个可调的认知风格，而不是固定角色。</p>
+      </div>
+      <div class="grid" style="grid-template-columns: 355px 305px 1fr; gap:18px;">
+        <div class="glass card">
+          <h3 style="margin-bottom:15px;">方向向量调参面板</h3>
+          <div class="slider-row"><div class="slider-head"><span>结构抽象度</span><span class="cyan-text">86 · 高</span></div><div class="track"><i style="--v:86%"></i></div><div class="track-labels"><span>具体经验</span><span>抽象结构</span></div></div>
+          <div class="slider-row"><div class="slider-head"><span>因果追问强度</span><span class="cyan-text">88 · 高</span></div><div class="track"><i style="--v:88%"></i></div><div class="track-labels"><span>直接回答</span><span>追问生成机制</span></div></div>
+          <div class="slider-row"><div class="slider-head"><span>联想发散距离</span><span class="cyan-text">72 · 中高</span></div><div class="track"><i style="--v:72%"></i></div><div class="track-labels"><span>近邻联想</span><span>远距同构迁移</span></div></div>
+          <div class="slider-row"><div class="slider-head"><span>风险敏感度</span><span class="cyan-text">64 · 中高</span></div><div class="track"><i style="--v:64%"></i></div><div class="track-labels"><span>机会优先</span><span>风险优先</span></div></div>
+          <div class="slider-row"><div class="slider-head"><span>证据门槛</span><span class="cyan-text">76 · 高</span></div><div class="track"><i style="--v:76%"></i></div><div class="track-labels"><span>快速假设</span><span>严格证据</span></div></div>
+          <div class="slider-row"><div class="slider-head"><span>系统规划强度</span><span class="cyan-text">84 · 高</span></div><div class="track"><i style="--v:84%"></i></div><div class="track-labels"><span>局部解决</span><span>长期系统设计</span></div></div>
+        </div>
+        <div class="glass card soft-glow">
+          <h3 style="margin-bottom:16px;">数字化身预览</h3>
+          <div class="avatar-orb float-slow"><i></i></div>
+          <div style="text-align:center;"><h3 style="font-size:20px;">Yuxuan-X / 结构生成型 Avatar</h3><p class="small" style="margin-top:10px;">偏向结构抽象、机制追问、跨域同构迁移的数字化身。</p></div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:16px 0;"><span class="pill active">结构上提</span><span class="pill active">机制追问</span><span class="pill active">远距类比</span></div>
+          <div style="display:grid; gap:12px;"><div class="metric"><div class="metric-row"><span>人格稳定性</span><span>95%</span></div><div class="bar"><i style="--v:95%"></i></div></div><div class="metric"><div class="metric-row"><span>思维相似度</span><span>92%</span></div><div class="bar"><i style="--v:92%"></i></div></div><div class="metric"><div class="metric-row"><span>可控性</span><span>97%</span></div><div class="bar"><i style="--v:97%"></i></div></div></div>
+        </div>
+        <div class="glass card">
+          <div style="display:flex; justify-content:space-between; gap:16px; margin-bottom:14px;"><div><h3>输出变化对比</h3><p class="small">同一个问题，在不同认知风格下会得到不同建议。</p></div><span class="pill active">Live Match</span></div>
+          <p class="mini-card" style="color:#cbd5e1;">问题：我现在要做一个 AI 创业项目，应该先做产品，还是先做融资？</p>
+          <div class="mini-card cyan-card" style="margin:14px 0 16px; padding:18px;">
+            <div style="display:flex; justify-content:space-between;"><h3 class="cyan-text">当前匹配：结构验证型 #01</h3><span class="tiny">#01</span></div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin:12px 0;"><span class="pill active">结构抽象</span><span class="pill active">机制追问</span><span class="pill active">长期规划</span></div>
+            <p style="font-size:16px; line-height:1.85; color:white;">这个问题不该停在产品和融资的二选一，而要放到验证阶段、资源约束、增长闭环三层里判断。融资只有在需求已经被证明时才是放大器，否则它会把一个没验证的问题推成必须增长的任务。</p>
+          </div>
+          <div class="grid two"><div class="mini-card"><p class="tiny">方向向量强度</p><h3 class="cyan-text">86%</h3></div><div class="mini-card"><p class="tiny">表达漂移抑制</p><h3 class="cyan-text">83%</h3></div><div class="mini-card"><p class="tiny">场景迁移度</p><h3 class="cyan-text">78%</h3></div><div class="mini-card"><p class="tiny">闭合阈值</p><h3 class="cyan-text">73%</h3></div></div>
+        </div>
+      </div>
+      <div class="slide-count">05 / 09</div>
+    </section>
+
+    <section class="slide" aria-label="认知互联网络">
+      <div class="section-title">
+        <p class="eyebrow">Wanstar Cognitive Network</p>
+        <h2>让合适的数字化身先碰撞</h2>
+        <p class="desc">用户提出问题后，系统先匹配互补的数字化身完成讨论，再决定是否连接背后的真实人。</p>
+      </div>
+      <div class="glass" style="overflow:hidden; margin-bottom:16px;">
+        <div style="display:grid; grid-template-columns: 1fr 340px;">
+          <div style="padding:18px;"><div class="mini-card" style="margin-bottom:12px; color:#f8fafc;">我想做 AI 创业，但不知道该先找投资人还是先打磨产品。</div><div style="display:flex; flex-wrap:wrap; gap:8px;"><span class="pill active">创业决策</span><span class="pill">职业选择</span><span class="pill">学习规划</span><span class="pill">情感关系</span><span class="pill">医养照护</span><span class="pill">投资判断</span><span class="pill">团队管理</span><span class="pill">创意共创</span></div></div>
+          <div style="position:relative; min-height:130px; border-left:1px solid rgba(148,163,184,.20); background:radial-gradient(circle at 24% 40%,rgba(103,232,249,.28),transparent 24%),radial-gradient(circle at 70% 44%,rgba(167,139,250,.28),transparent 25%),rgba(2,6,23,.42);"><div style="position:absolute; left:16px; right:16px; bottom:14px;"><h3>先协作，再连接</h3><p class="small">数字化身先帮用户筛选思路，真正有价值时再连接真人。</p></div></div>
+        </div>
+      </div>
+      <div class="glass battlefield">
+        <aside class="battle-aside">
+          <div class="eyebrow" style="font-size:10px;">Relation Tools</div>
+          <div class="mini-card" style="margin-top:12px;"><h3>人格互补视图</h3><p class="tiny">查看不同 Avatar 的人格偏向如何互补</p></div>
+          <div class="mini-card" style="margin-top:10px;"><h3>认知冲突分析</h3><p class="tiny">识别高价值摩擦与需要校准的判断点</p></div>
+          <div class="mini-card" style="margin-top:10px;"><h3>能力缺口映射</h3><p class="tiny">把用户问题拆成能力需求和短板</p></div>
+          <div class="mini-card" style="margin-top:10px;"><h3>连接路径生成</h3><p class="tiny">从 Avatar 建议路由到真实本人连接</p></div>
+        </aside>
+        <main class="battle-center">
+          <div style="display:grid; gap:88px; position:relative; z-index:1;"><div class="mini-card cyan-card"><h3>用户问题 C2</h3><p class="tiny">AI 创业路径判断<br>产品验证不足<br>融资窗口不确定</p></div><div class="mini-card cyan-card"><h3>问题需求向量</h3><p class="tiny">战略判断 / MVP 验证<br>风险控制 / 创始人状态</p></div></div>
+          <div class="zone-wrap" style="position:relative; z-index:1;"><h3 style="text-align:center;" class="cyan-text">互补收敛区 Nucleus Convergence Zones</h3><div class="zone"><h3>互补收敛区 1 <span class="tiny">86% overlap</span></h3><p class="tiny">产品验证 × 风险约束 / 最小用户群优先 / 融资承诺成本评估</p></div><div class="zone"><h3>互补收敛区 2 <span class="tiny">81% overlap</span></h3><p class="tiny">增长路径 × 技术叙事 / 10 个强痛点用户 / 渠道反馈闭环</p></div><div class="zone active"><h3>互补收敛区 3 <span class="tiny">88% overlap</span></h3><p class="tiny">长期愿景 × 短期节奏 / 30 天 MVP / 3 个真实客户案例</p></div><div class="zone"><h3>互补收敛区 4 <span class="tiny">74% overlap</span></h3><p class="tiny">情绪动机 × 行动闭合 / 外部认可焦虑 / 目标压缩为单闭环</p></div></div>
+          <div style="display:grid; gap:14px; position:relative; z-index:1;"><div class="mini-card violet-card"><h3>A1 结构生成型</h3><p class="tiny">抽象上提 / 机制追问 / 长期系统设计</p></div><div class="mini-card violet-card"><h3>A2 产品经理型</h3><p class="tiny">MVP / 用户访谈 / 需求验证</p></div><div class="mini-card violet-card"><h3>A3 风险投资型</h3><p class="tiny">融资节奏 / 下行保护 / 商业模式</p></div><div class="mini-card violet-card"><h3>A4 心理洞察型</h3><p class="tiny">压力识别 / 边界表达 / 状态复盘</p></div></div>
+        </main>
+        <aside class="battle-right">
+          <div class="eyebrow" style="font-size:10px;">Clone Configuration</div>
+          <div style="display:flex; align-items:center; gap:14px; margin:15px 0;"><div class="avatar-orb" style="width:76px; height:76px; margin:0;"><i style="width:42px; height:42px;"></i></div><div><h3>Yuxuan-X</h3><p class="tiny">结构生成型 Avatar</p></div></div>
+          <div class="mini-card violet-card"><h3>当前选中收敛区</h3><p class="small">互补收敛区 3：长期愿景 × 短期节奏 / 30 天 MVP / 3 个真实客户案例</p></div>
+          <div style="display:grid; gap:12px; margin-top:14px;"><div class="metric"><div class="metric-row"><span>人格互补度</span><span>88%</span></div><div class="bar"><i style="--v:88%"></i></div></div><div class="metric"><div class="metric-row"><span>认知摩擦价值</span><span>92%</span></div><div class="bar"><i style="--v:92%"></i></div></div><div class="metric"><div class="metric-row"><span>真人连接概率</span><span>86%</span></div><div class="bar"><i style="--v:86%"></i></div></div></div>
+        </aside>
+      </div>
+      <div class="slide-count">06 / 09</div>
+    </section>
+
+    <section class="slide" aria-label="Avatar匹配和圆桌">
+      <div class="section-title">
+        <p class="eyebrow">Avatar Roundtable</p>
+        <h2>问题分析、互补匹配与多 Avatar 协作圆桌</h2>
+        <p class="desc">把用户问题拆成能力需求和缺口，再让多个数字化身先完成低成本认知协作。</p>
+      </div>
+      <div class="grid" style="grid-template-columns: 330px 1fr; gap:18px;">
+        <div class="glass card">
+          <h3 style="margin-bottom:14px;">问题分析</h3>
+          <p class="small" style="margin-bottom:10px;">当前问题所需能力</p>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;"><span class="pill active">战略判断</span><span class="pill active">风险控制</span><span class="pill active">产品验证</span><span class="pill active">资源整合</span><span class="pill active">长期规划</span><span class="pill active">反脆弱决策</span></div>
+          <p class="small" style="margin-bottom:10px;">当前用户可能缺口</p>
+          <div class="mini-card violet-card" style="margin-bottom:10px;">过度抽象，缺少落地节奏</div>
+          <div class="mini-card violet-card" style="margin-bottom:10px;">长期愿景强，但短期验证路径不足</div>
+          <div class="mini-card violet-card">创造力强，但风险控制需要补足</div>
+        </div>
+        <div class="grid two" style="gap:14px;">
+          <div class="glass card"><div style="display:flex; justify-content:space-between; gap:12px;"><div><h3>Lin-MVP · 冷启动产品经理型</h3><p class="tiny">连续创业者本人数字化身</p></div><span class="pill active">94%</span></div><div style="display:flex; gap:8px; flex-wrap:wrap; margin:12px 0;"><span class="pill">MVP</span><span class="pill">需求验证</span><span class="pill">用户访谈</span><span class="pill active">落地节奏</span><span class="pill active">小样本验证</span></div><p class="small">互补点：帮助你从宏大愿景落到第一个可验证产品</p><div class="mini-card cyan-card" style="margin-top:12px;">先不要做完整平台。定义一个强痛点人群，用 7 天做出可交付结果。</div></div>
+          <div class="glass card"><div style="display:flex; justify-content:space-between; gap:12px;"><div><h3>Qiao-Risk · 风险控制型投资人</h3><p class="tiny">早期基金合伙人数字化身</p></div><span class="pill active">89%</span></div><div style="display:flex; gap:8px; flex-wrap:wrap; margin:12px 0;"><span class="pill">商业模式</span><span class="pill">融资节奏</span><span class="pill">财务风险</span><span class="pill active">下行保护</span></div><p class="small">互补点：防止过早融资或错误融资</p><div class="mini-card cyan-card" style="margin-top:12px;">融资不是越早越好。你需要先证明一个窄场景的需求强度。</div></div>
+          <div class="glass card"><div style="display:flex; justify-content:space-between; gap:12px;"><div><h3>Ming-Growth · 增长型创业者</h3><p class="tiny">B2B 增长负责人数字化身</p></div><span class="pill active">86%</span></div><div style="display:flex; gap:8px; flex-wrap:wrap; margin:12px 0;"><span class="pill">市场冷启动</span><span class="pill">渠道验证</span><span class="pill">销售闭环</span><span class="pill active">成交反馈</span></div><p class="small">互补点：帮助你把技术叙事转化成市场动作</p><div class="mini-card cyan-card" style="margin-top:12px;">找 10 个强痛点用户，先用人工交付做闭环。</div></div>
+          <div class="glass card"><div style="display:flex; justify-content:space-between; gap:12px;"><div><h3>An-Insight · 心理洞察型顾问</h3><p class="tiny">组织心理顾问数字化身</p></div><span class="pill active">82%</span></div><div style="display:flex; gap:8px; flex-wrap:wrap; margin:12px 0;"><span class="pill">团队沟通</span><span class="pill">创始人状态</span><span class="pill">关系决策</span><span class="pill active">动机识别</span></div><p class="small">互补点：帮助你识别决策背后的情绪和动机</p><div class="mini-card cyan-card" style="margin-top:12px;">你现在可能被宏大愿景牵引，也被外部认可焦虑推动。</div></div>
+        </div>
+      </div>
+      <div class="glass card" style="position:absolute; left:44px; right:44px; bottom:52px;">
+        <h3 style="margin-bottom:12px;">多 Avatar 协作圆桌</h3>
+        <div class="grid four">
+          <div class="mini-card"><h3 class="cyan-text">Lin-MVP</h3><p class="small">先判断你有没有明确的最小用户群。</p></div>
+          <div class="mini-card"><h3 class="cyan-text">Qiao-Risk</h3><p class="small">如果现金流不足，应该先拿小额资源。</p></div>
+          <div class="mini-card"><h3 class="cyan-text">Ming-Growth</h3><p class="small">找到 10 个强痛点用户，而不是做完整平台。</p></div>
+          <div class="mini-card"><h3 class="cyan-text">An-Insight</h3><p class="small">先把目标压缩到一个可完成的闭环。</p></div>
+        </div>
+      </div>
+      <div class="slide-count">07 / 09</div>
+    </section>
+
+    <section class="slide" aria-label="C-A-A-C闭环传播链">
+      <div class="section-title">
+        <p class="eyebrow">C → A → A → C Loop</p>
+        <h2>用数字化身重组人与人的连接方式</h2>
+        <p class="desc">真实人生成数字化身，数字化身先协作，最后把高价值关系带回真实人。</p>
+      </div>
+      <div class="grid four" style="margin-bottom:16px;">
+        <div class="glass card"><div style="display:flex; justify-content:space-between;"><span class="tiny cyan-text">Step 01</span><span>→</span></div><h3>C → A</h3><p class="small">真实人通过 Cells 生成稳定、可控、可调的数字化身。</p></div>
+        <div class="glass card"><div style="display:flex; justify-content:space-between;"><span class="tiny cyan-text">Step 02</span><span>→</span></div><h3>A → A</h3><p class="small">多个 Avatar 根据问题需求和互补度先完成认知协作。</p></div>
+        <div class="glass card"><div style="display:flex; justify-content:space-between;"><span class="tiny cyan-text">Step 03</span><span>→</span></div><h3>A → C</h3><p class="small">高价值建议触发真人连接，进入咨询、合作、交易或共创。</p></div>
+        <div class="glass card"><div style="display:flex; justify-content:space-between;"><span class="tiny cyan-text">Step 04</span><span>↺</span></div><h3>Feedback</h3><p class="small">真实交互结果反哺 Avatar，形成持续增值的认知网络。</p></div>
+      </div>
+      <div class="grid" style="grid-template-columns: 1fr 330px; gap:18px;">
+        <div class="glass card" style="padding:16px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;"><div><h3>Wanstar 智能体传播链</h3><p class="small">蓝色是 Avatar，绿色是真实人，紫色是网络路由，黄色是商业动作。</p></div><div style="display:flex; gap:8px;"><span class="pill active">真实人 C</span><span class="pill active">数字化身 A</span><span class="pill active">网络协作</span></div></div>
+          <div class="loop-map">
+            <svg viewBox="0 0 830 462">
+              <defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="rgba(103,232,249,.75)"/></marker></defs>
+              <g stroke="rgba(103,232,249,.55)" stroke-width="2" marker-end="url(#arrow)">
+                <line x1="70" y1="225" x2="180" y2="120"/><line x1="180" y1="120" x2="290" y2="225"/><line x1="290" y1="225" x2="400" y2="120"/><line x1="400" y1="120" x2="520" y2="225"/><line x1="520" y1="225" x2="650" y2="225"/><line x1="650" y1="225" x2="760" y2="120"/><line class="trace-dash" x1="760" y1="330" x2="290" y2="225"/></g>
+              <g stroke="rgba(167,139,250,.46)" stroke-width="2" marker-end="url(#arrow)"><line x1="400" y1="120" x2="520" y2="70"/><line x1="400" y1="120" x2="545" y2="360"/><line x1="400" y1="120" x2="520" y2="225"/></g>
+            </svg>
+            <div class="loop-node c" style="left:8%; top:49%;"><b>真实本人 C1</b>许宇轩 / Cells 创始人</div>
+            <div class="loop-node n" style="left:22%; top:26%;"><b>Cells 建模引擎</b>侧写 + 脑表征 + 方向向量</div>
+            <div class="loop-node a" style="left:35%; top:49%;"><b>A1 结构生成型 Avatar</b>人格向量与专业标签</div>
+            <div class="loop-node n" style="left:48%; top:26%;"><b>Wanstar 认知网络</b>Avatar 关系图谱</div>
+            <div class="loop-node c" style="left:48%; top:76%;"><b>真实用户 C2</b>创业者提出现实问题</div>
+            <div class="loop-node a" style="left:63%; top:15%;"><b>A2 产品经理型</b>MVP / 用户访谈</div>
+            <div class="loop-node a" style="left:66%; top:49%;"><b>A3 风险投资型</b>融资节奏 / 下行保护</div>
+            <div class="loop-node a" style="left:63%; top:78%;"><b>A4 心理洞察型</b>创始人状态</div>
+            <div class="loop-node action" style="left:79%; top:49%;"><b>综合建议生成</b>30 天 MVP → 3 个客户案例</div>
+            <div class="loop-node c" style="left:92%; top:26%;"><b>连接 A1 背后真人</b>咨询 / 合作 / 交易</div>
+            <div class="loop-node n" style="left:92%; top:76%;"><b>真实反馈回流</b>结果继续训练 Avatar</div>
+          </div>
+        </div>
+        <div class="glass card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><span class="eyebrow" style="font-size:10px; margin:0;">Selected Link Node</span><span class="pill active">A → C</span></div>
+          <h3 style="font-size:22px;">综合建议生成</h3>
+          <p class="small" style="margin-top:7px;">30 天 MVP → 3 个客户案例 → 种子投资人</p>
+          <div class="mini-card cyan-card" style="margin-top:16px;"><h3>它在闭环里做什么</h3><p class="small">多 Avatar 先完成 A → A 圆桌协作，输出可执行建议和证据链。</p></div>
+          <div class="mini-card violet-card" style="margin-top:12px;"><h3>商业意义</h3><p class="small">平台在真人连接前先完成认知预处理，提高后续连接效率。</p></div>
+          <div style="display:grid; gap:12px; margin-top:16px;"><div class="metric"><div class="metric-row"><span>连接价值密度</span><span>93%</span></div><div class="bar"><i style="--v:93%"></i></div></div><div class="metric"><div class="metric-row"><span>协作可解释性</span><span>91%</span></div><div class="bar"><i style="--v:91%"></i></div></div><div class="metric"><div class="metric-row"><span>反馈反哺潜力</span><span>78%</span></div><div class="bar"><i style="--v:78%"></i></div></div></div>
+        </div>
+      </div>
+      <div class="slide-count">08 / 09</div>
+    </section>
+
+    <section class="slide" aria-label="闭环流程解释">
+      <div class="section-title">
+        <p class="eyebrow">C-A-A-C Demo Script</p>
+        <h2>流程解释：从真实人，到数字化身协作，再回到真实连接</h2>
+        <p class="desc">保留原页面的闭环脚本方块，并以 PPT 单屏方式重排。</p>
+      </div>
+      <div class="glass card" style="margin-bottom:18px;">
+        <div class="grid four">
+          <div class="mini-card flow-sheen"><span class="pill active">1</span><p class="small" style="margin-top:10px;">用户进入 Cells 人格模拟工作台，通过深度对话生成侧写数据。</p></div>
+          <div class="mini-card flow-sheen"><span class="pill active">2</span><p class="small" style="margin-top:10px;">系统将对话数据转化为人格维度、思维方式维度和正负样本对。</p></div>
+          <div class="mini-card flow-sheen"><span class="pill active">3</span><p class="small" style="margin-top:10px;">系统融合脑区信号和大脑表征建模，得到更底层的认知表征。</p></div>
+          <div class="mini-card flow-sheen"><span class="pill active">4</span><p class="small" style="margin-top:10px;">Cells 从这些数据中提取方向向量，构建可调参数字化身。</p></div>
+          <div class="mini-card flow-sheen"><span class="pill active">5</span><p class="small" style="margin-top:10px;">用户在万思达中提出现实问题，平台自动匹配互补型数字化身。</p></div>
+          <div class="mini-card flow-sheen"><span class="pill active">6</span><p class="small" style="margin-top:10px;">多个数字化身先进行 A → A 认知协作。</p></div>
+          <div class="mini-card flow-sheen"><span class="pill active">7</span><p class="small" style="margin-top:10px;">用户认可某个数字化身的价值，进一步连接其背后的真实本人。</p></div>
+          <div class="mini-card flow-sheen"><span class="pill active">8</span><p class="small" style="margin-top:10px;">真实连接产生反馈，再反哺数字化身，形成 C → A → A → C 闭环。</p></div>
+        </div>
+      </div>
+      <div class="grid three">
+        <div class="glass card soft-glow"><h3>Human Layer</h3><p class="muted" style="margin-top:12px;">数字化身的终点不是替代人，而是更好地连接人。真实人提供价值观、经验、决策样本和可连接身份。</p></div>
+        <div class="glass card soft-glow"><h3>Avatar Network</h3><p class="muted" style="margin-top:12px;">数字化身先承担低成本试探和协作，根据问题需求、人格互补度、专业能力和连接权限组织网络。</p></div>
+        <div class="glass card soft-glow"><h3>Business Loop</h3><p class="muted" style="margin-top:12px;">当建议被证明有价值，平台再把背后的真实本人连接出来，进入咨询、合作、交易和共创。</p></div>
+      </div>
+      <div class="glass card" style="position:absolute; left:130px; right:130px; bottom:58px; text-align:center;">
+        <h2 style="font-size:28px;">C → A → A → C</h2>
+        <p class="muted" style="margin-top:8px;">人格模拟技术负责构建稳定 Avatar，Wanstar 负责让 Avatar 进入认知互联网络，并把高价值关系带回真实世界。</p>
+      </div>
+      <div class="slide-count">09 / 09</div>
+    </section>
+  </div>
+
+  <div class="controls" aria-label="幻灯片控制">
+    <button class="nav-btn" id="prevBtn" type="button" aria-label="上一页">‹</button>
+    <button class="nav-btn" id="nextBtn" type="button" aria-label="下一页">›</button>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    let current = 0;
+
+    function fitDeck() {
+      const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+      document.documentElement.style.setProperty("--deck-scale", Math.max(0.1, scale).toFixed(4));
+    }
+
+    function render() {
+      slides.forEach((slide, index) => {
+        slide.classList.toggle("active", index === current);
+        slide.setAttribute("aria-hidden", index === current ? "false" : "true");
+      });
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
+    }
+
+    function go(delta) {
+      const next = Math.max(0, Math.min(slides.length - 1, current + delta));
+      if (next !== current) {
+        current = next;
+        render();
+      }
+    }
+
+    prevBtn.addEventListener("click", () => go(-1));
+    nextBtn.addEventListener("click", () => go(1));
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") go(-1);
+      if (event.key === "ArrowRight") go(1);
+    });
+    window.addEventListener("resize", fitDeck);
+
+    fitDeck();
+    render();
+  </script>
+</body>
+</html>
